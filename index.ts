@@ -3,9 +3,11 @@ import puppeteer from 'puppeteer-extra'
 import AdblockerPlugin from 'puppeteer-extra-plugin-adblocker'
 import StealthPlugin from 'puppeteer-extra-plugin-stealth'
 
+const fs = require('fs')
+
 puppeteer.use(AdblockerPlugin()).use(StealthPlugin())
 
-const url = 'https://www.sarkariresult.com/';
+const url = 'https://www.sarkariresult.com/result/';
 
 (async () => {
   const browser = await puppeteer.launch({ headless: false }); // Adjust 'headless' to your preference
@@ -14,7 +16,7 @@ const url = 'https://www.sarkariresult.com/';
 
   // The evaluate function of puppeteer
   const scrapedData = await page.evaluate(() => {
-    const postElement = document.querySelector("#box1 #post");
+    const postElement = document.querySelector("#post");
 
     if (postElement) {
       // Get all anchor tags within the #post element
@@ -35,5 +37,10 @@ const url = 'https://www.sarkariresult.com/';
   console.log(scrapedData); // Array of text contents from anchor tags within #post
 
   await browser.close();
+  fs.writeFile('data.txt', JSON.stringify(scrapedData), (err: any)=>{
+    if(err) throw err;
+    console.log("done parsing ")
+      
+  })
 })();
 
